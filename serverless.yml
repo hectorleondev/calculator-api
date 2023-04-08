@@ -1,0 +1,40 @@
+service: calculator-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  environment:
+    USER_TABLE:
+      Ref: UserTable
+    OPERATION_TABLE:
+      Ref: OperationTable
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+resources:
+  Resources:
+    UserTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: user_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: user_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    OperationTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: operation_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: operation_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
