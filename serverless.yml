@@ -1,6 +1,9 @@
 service: calculator-api
 frameworkVersion: '3'
 
+plugins:
+  - serverless-python-requirements
+
 provider:
   name: aws
   runtime: python3.9
@@ -9,6 +12,8 @@ provider:
       Ref: UserTable
     OPERATION_TABLE:
       Ref: OperationTable
+    RECORD_TABLE:
+      Ref: RecordTable
 functions:
   hello:
     handler: handler.hello
@@ -38,3 +43,32 @@ resources:
           - AttributeName: operation_id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    RecordTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: record_id
+            AttributeType: S
+          - AttributeName: user_id
+            AttributeType: S
+          - AttributeName: operation_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: record_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: userIndex
+            KeySchema:
+              - AttributeName: user_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: userOperationIndex
+            KeySchema:
+              - AttributeName: user_id
+                KeyType: HASH
+              - AttributeName: operation_id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
