@@ -5,7 +5,7 @@ from src.data.exceptions import BadRequestException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user_by_email, create_user
+from src.services.db import get_user_by_email, create_user, search_user
 from src.services.util import encrypt_password
 from src.services.validation import validate_event
 
@@ -35,3 +35,19 @@ class UserController:
         create_user(email, password, user_balance)
 
         return {"message": "User was created successfully"}
+
+    def login_user(self):
+        self.logger.info({"message": "Event information", "event_info": self.event})
+
+        body = json.loads(self.event.get("body", {}))
+
+        validate_event(body, "login")
+
+        email = body.get("username", "")
+        password = encrypt_password(body.get("password", ""))
+
+        users = search_user(email, password)
+        if not users:
+            raise BadRequestException("Account not found")
+
+        return users[0]

@@ -14,5 +14,5 @@ logger = Logger(service=conf.LOGGER_SERVICE_NAME)
 def handler(event, _):
 
     user = UserController(_conf_svc=conf, _event=event, _logger=logger)
-    response = user.create_user()
-    return HTTPStatus.CREATED, response
+    response = user.login_user()
+    return HTTPStatus.OK, response
