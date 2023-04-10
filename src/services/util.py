@@ -1,7 +1,7 @@
+import base64
 import json
 import os
 
-import bcrypt
 import jwt
 
 from src.data import schema
@@ -41,4 +41,4 @@ def decode_token(token: str):
 
 def encrypt_password(password: str):
     password = password.encode('utf-8')
-    return bcrypt.hashpw(password, bcrypt.gensalt())
+    return base64.b64encode(password).decode()

@@ -25,12 +25,19 @@ def handler(event, _):
     email = body.get("username", "")
 
     users = get_user_by_email(email)
-    if users:
+    if users.total_count > 0:
         raise BadRequestException("There is an account with that username")
 
     password = encrypt_password(body.get("password", ""))
-    user_balance = float(body.get("user_balance", 0))
+    user_balance = float(body.get("user_balance", "0"))
 
     create_user(email, password, user_balance)
 
     return HTTPStatus.CREATED, {"message": "User was created successfully"}
+
+
+if __name__ == '__main__':
+    _event = {
+        "body": "{\n    \"username\":\"payorayo@gmail.com\",\n    \"password\":\"12345678\",\n    \"user_balance\": 1000\n}\n"
+    }
+    print(handler(_event, {}))

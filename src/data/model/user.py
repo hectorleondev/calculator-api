@@ -14,7 +14,9 @@ class UserModel(Model):
     """
 
     class Meta:
-        table_name = conf.USER_TABLE
+        table_name = "calculator-api-dev-UserTable-10M75T9OTA2I8"
+        region = 'us-east-1'
+        host = 'https://dynamodb.us-east-1.amazonaws.com'
 
     user_id = UnicodeAttribute(hash_key=True)
     username = UnicodeAttribute(null=False)
@@ -23,3 +25,11 @@ class UserModel(Model):
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     is_active = BooleanAttribute(default=True)
 
+    def save(self, conditional_operator=None, **expected_values):
+        self.createdAt = datetime.now()
+        self.is_active = True
+        super(UserModel, self).save()
+
+    def __iter__(self):
+        for name, attr in self._get_attributes().items():
+            yield name, attr.serialize(getattr(self, name))

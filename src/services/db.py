@@ -11,15 +11,13 @@ def create_user(username: str, password: str, user_balance: float):
     Creqte new user
     :param username:
     :param password:
-    :param email:
     :param user_balance:
     :return:
     """
-    user = UserModel()
-    user.user_id = str(uuid.uuid4().hex)
-    user.username = username
-    user.password = password
-    user.user_balance = user_balance
+    user = UserModel(user_id=str(uuid.uuid4().hex),
+                     username=username,
+                     password=password,
+                     user_balance=user_balance)
     user.save()
 
 
@@ -31,7 +29,7 @@ def search_user(username: str, password: str):
     :return:
     """
     return UserModel.scan(filter_condition=(UserModel.username == username) & (UserModel.password == password)
-                                           & (UserModel.is_active is True))
+                                           & (UserModel.is_active == True))
 
 
 def get_user_by_email(email: str):
@@ -40,7 +38,7 @@ def get_user_by_email(email: str):
     :param email:
     :return:
     """
-    return UserModel.scan(filter_condition=(UserModel.username == email) & (UserModel.is_active is True))
+    return UserModel.scan(filter_condition=(UserModel.username == email) & (UserModel.is_active == True))
 
 
 def get_user(user_id: str):
