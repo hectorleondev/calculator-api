@@ -3,8 +3,8 @@
    "title":"create_user",
    "type":"object",
    "properties":{
-      "username":{"type":"string"},
-      "password":{"type":"string"},
+      "username":{"type":"string", "format": "email", "pattern": "^\\S+@\\S+\\.\\S+$"},
+      "password":{"type":"string", "minLength": 8},
       "user_balance":{"type":"number"}
    },
    "required":[
