@@ -14,9 +14,23 @@ provider:
       Ref: OperationTable
     RECORD_TABLE:
       Ref: RecordTable
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:DescribeTable
+          Resource: "*"
+
 functions:
   hello:
-    handler: handler.hello
+    handler: src.handler.hello.handler
     events:
       - httpApi:
           path: /
@@ -29,10 +43,24 @@ resources:
         AttributeDefinitions:
           - AttributeName: user_id
             AttributeType: S
+          - AttributeName: username
+            AttributeType: S
+          - AttributeName: password
+            AttributeType: S
         KeySchema:
           - AttributeName: user_id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: username_password_index
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+              - AttributeName: password
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
     OperationTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
@@ -43,6 +71,7 @@ resources:
           - AttributeName: operation_id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
     RecordTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
@@ -58,17 +87,9 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         GlobalSecondaryIndexes:
-          - IndexName: userIndex
+          - IndexName: user_index
             KeySchema:
               - AttributeName: user_id
                 KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-          - IndexName: userOperationIndex
-            KeySchema:
-              - AttributeName: user_id
-                KeyType: HASH
-              - AttributeName: operation_id
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
