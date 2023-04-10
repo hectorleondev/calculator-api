@@ -27,7 +27,6 @@ class UserModel(Model):
     user_id = UnicodeAttribute(hash_key=True)
     username = UnicodeAttribute(null=False)
     password = UnicodeAttribute(null=False)
-    email = UnicodeAttribute(null=False)
     user_balance = NumberAttribute()
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     is_active = BooleanAttribute(default=True)

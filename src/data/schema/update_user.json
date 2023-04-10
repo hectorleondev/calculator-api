@@ -1,0 +1,11 @@
+{
+   "$schema":"http://json-schema.org/draft-04/schema#",
+   "title":"update_user",
+   "type":"object",
+   "properties":{
+      "user_balance":{"type":"number"}
+   },
+   "required":[
+      "user_balance"
+   ]
+}

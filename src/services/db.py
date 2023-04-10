@@ -49,6 +49,16 @@ def get_user(user_id: str):
         return None
 
 
+def remove_user(instance: UserModel):
+    instance.is_active = False
+    instance.save()
+
+
+def update_user_balance(instance: UserModel, balance: float):
+    instance.user_balance = balance
+    instance.save()
+
+
 def create_operator(type_operation: str, cost: str):
     """
     Creqte new operation
@@ -73,6 +83,7 @@ def get_operation(operation_id):
     except DoesNotExist:
         return None
 
+
 def create_record(user_id: str,
                   operation_id: str,
                   operator_one: str,
@@ -82,7 +93,8 @@ def create_record(user_id: str,
     Create record
     :param user_id:
     :param operation_id:
-    :param operators:
+    :param operator_one:
+    :param operator_two:
     :param operation_response:
     :return:
     """
@@ -121,3 +133,8 @@ def get_record(record_id: str):
         return RecordModel.get(hash_key=record_id)
     except DoesNotExist:
         return None
+
+
+def remove_record(instance: RecordModel):
+    instance.is_active = False
+    instance.save()
