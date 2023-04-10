@@ -81,8 +81,6 @@ resources:
             AttributeType: S
           - AttributeName: user_id
             AttributeType: S
-          - AttributeName: operation_id
-            AttributeType: S
         KeySchema:
           - AttributeName: record_id
             KeyType: HASH
