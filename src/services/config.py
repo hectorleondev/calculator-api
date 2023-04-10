@@ -7,4 +7,4 @@ class ConfigService:
         self.OPERATION_TABLE: str = os.getenv("OPERATION_TABLE")
         self.RECORD_TABLE: str = os.getenv("RECORD_TABLE")
         self.LOGGER_SERVICE_NAME: str = os.getenv("LOGGER_SERVICE_NAME")
-
+        self.SECRET_JWT = "31c442545ba548899491635bdc33b00f"

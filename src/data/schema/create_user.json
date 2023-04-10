@@ -5,7 +5,7 @@
    "properties":{
       "username":{"type":"string", "format": "email", "pattern": "^\\S+@\\S+\\.\\S+$"},
       "password":{"type":"string", "minLength": 8},
-      "user_balance":{"type":"number"}
+      "user_balance":{"type":"number", "minimum":  10}
    },
    "required":[
       "username",

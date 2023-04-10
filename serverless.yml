@@ -30,12 +30,13 @@ provider:
           Resource: "*"
 
 functions:
-  hello:
-    handler: src.handler.hello.handler
+  create_user:
+    handler: src.handlers.create_user.handler
     events:
-      - httpApi:
-          path: /
-          method: get
+      - http:
+          path: user
+          method: post
+          cors: true
 resources:
   Resources:
     UserTable:
