@@ -5,7 +5,7 @@ from src.data.exceptions import BadRequestException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user_by_email, create_user, search_user
+from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance
 from src.services.util import encrypt_password
 from src.services.validation import validate_event
 
@@ -51,3 +51,26 @@ class UserController:
             raise BadRequestException("Account not found")
 
         return users[0]
+
+    def update_user(self):
+        self.logger.info({"message": "Event information", "event_info": self.event})
+
+        body = json.loads(self.event.get("body", {}))
+
+        validate_event(body, "update_user")
+
+        user_id = body.get("user_id", "")
+
+        user = get_user(user_id)
+        if not user:
+            raise BadRequestException("There is not an account with user_id")
+
+        user_balance = float(body.get("user_balance", "0"))
+
+        if user.user_balance >= user_balance:
+            raise BadRequestException("The new balance must be greater than previous one")
+
+        update_user_balance(user, user_balance)
+
+        return {"message": "User was updated successfully"}
+

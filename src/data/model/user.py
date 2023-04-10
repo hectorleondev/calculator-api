@@ -27,6 +27,7 @@ class UserModel(Model):
         :return:
         """
         _dict_data = {
+            "user_id": self.user_id,
             "username": self.username,
             "user_balance": self.user_balance,
             "status": self.status

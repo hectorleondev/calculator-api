@@ -1,5 +1,7 @@
 # Distribution / packaging
 .Python
+__pycache__/
+*.py[cod]
 env/
 build/
 develop-eggs/

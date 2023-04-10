@@ -46,6 +46,13 @@ functions:
           path: login
           method: post
           cors: true
+  update_user:
+    handler: src.handlers.update_user.handler
+    events:
+      - http:
+          path: user
+          method: put
+          cors: true
 resources:
   Resources:
     UserTable:
