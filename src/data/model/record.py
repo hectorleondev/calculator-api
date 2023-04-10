@@ -1,6 +1,8 @@
+import os
+
 from pynamodb.models import Model
 from pynamodb.attributes import (
-    UnicodeAttribute, NumberAttribute, UTCDateTimeAttribute, BooleanAttribute, ListAttribute)
+    UnicodeAttribute, NumberAttribute, UTCDateTimeAttribute)
 from datetime import datetime
 from pynamodb.indexes import (GlobalSecondaryIndex, AllProjection)
 
@@ -22,15 +24,15 @@ class RecordModel(Model):
     """
 
     class Meta:
-        table_name = conf.RECORD_TABLE
+        table_name = os.getenv("RECORD_TABLE")
+        region = os.getenv("REGION", "us-east-1")
 
     record_id = UnicodeAttribute(hash_key=True)
-    user_id = UnicodeAttribute()
-    operation_id = UnicodeAttribute()
-    operator_one = UnicodeAttribute(null=False)
-    operator_two = UnicodeAttribute()
-    operation_response = UnicodeAttribute()
+    user_id = UnicodeAttribute(null=False)
+    operation_id = UnicodeAttribute(null=False)
+    amount = NumberAttribute(null=False, default=0.0)
+    user_balance = NumberAttribute(null=False, default=0.0)
+    operation_response = NumberAttribute(null=False, default=0.0)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
-    is_active = BooleanAttribute(default=True)
 
     user_index = UserIndex()

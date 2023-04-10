@@ -1,11 +1,8 @@
+import os
 from datetime import datetime
 
 from pynamodb.models import Model
 from pynamodb.attributes import (UnicodeAttribute, NumberAttribute, UTCDateTimeAttribute)
-
-from src.services.config import ConfigService
-
-conf = ConfigService()
 
 
 class OperationModel(Model):
@@ -14,9 +11,10 @@ class OperationModel(Model):
     """
 
     class Meta:
-        table_name = conf.OPERATION_TABLE
+        table_name = os.getenv("OPERATION_TABLE")
+        region = os.getenv("REGION", "us-east-1")
 
     operation_id = UnicodeAttribute(hash_key=True)
     type = UnicodeAttribute()
-    cost = NumberAttribute(null=False)
+    cost = NumberAttribute(null=False, default=0.0)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())

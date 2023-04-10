@@ -3,12 +3,9 @@ from http import HTTPStatus
 
 from aws_lambda_powertools import Logger
 
-from src.data.exceptions import BadRequestException
+from src.controller.user_controller import UserController
 from src.services.config import ConfigService
-from src.services.db import get_user_by_email, create_user
 from src.services.response import ResponseService
-from src.services.util import encrypt_password
-from src.services.validation import validate_event
 
 conf = ConfigService()
 logger = Logger(service=conf.LOGGER_SERVICE_NAME)
@@ -16,28 +13,7 @@ logger = Logger(service=conf.LOGGER_SERVICE_NAME)
 
 @ResponseService.pretty_response
 def handler(event, _):
-    logger.info({"message": "Event information", "event_info": event})
 
-    body = json.loads(event.get("body", {}))
-
-    validate_event(body, "create_user")
-
-    email = body.get("username", "")
-
-    users = get_user_by_email(email)
-    if users.total_count > 0:
-        raise BadRequestException("There is an account with that username")
-
-    password = encrypt_password(body.get("password", ""))
-    user_balance = float(body.get("user_balance", "0"))
-
-    create_user(email, password, user_balance)
-
-    return HTTPStatus.CREATED, {"message": "User was created successfully"}
-
-
-if __name__ == '__main__':
-    _event = {
-        "body": "{\n    \"username\":\"payorayo@gmail.com\",\n    \"password\":\"12345678\",\n    \"user_balance\": 1000\n}\n"
-    }
-    print(handler(_event, {}))
+    user = UserController(_conf_svc=conf, _event=event, _logger=logger)
+    response = user.create_user()
+    return HTTPStatus.CREATED, response

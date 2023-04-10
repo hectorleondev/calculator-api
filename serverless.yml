@@ -16,6 +16,7 @@ provider:
     RECORD_TABLE:
       Ref: RecordTable
     LOGGER_SERVICE_NAME: ${self:service}-logger
+    REGION: ${self:provider.region}
   iam:
     role:
       statements:

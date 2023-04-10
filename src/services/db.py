@@ -1,5 +1,6 @@
 import uuid
 
+from src.data.enum import StatusType
 from src.data.model.operation import OperationModel
 from src.data.model.record import RecordModel
 from src.data.model.user import UserModel
@@ -28,8 +29,9 @@ def search_user(username: str, password: str):
     :param password:
     :return:
     """
-    return UserModel.scan(filter_condition=(UserModel.username == username) & (UserModel.password == password)
-                                           & (UserModel.is_active == True))
+    return UserModel.scan(filter_condition=(UserModel.username == username) &
+                                           (UserModel.password == password) &
+                                           (UserModel.status == StatusType.ACTIVE.value))
 
 
 def get_user_by_email(email: str):
@@ -38,7 +40,8 @@ def get_user_by_email(email: str):
     :param email:
     :return:
     """
-    return UserModel.scan(filter_condition=(UserModel.username == email) & (UserModel.is_active == True))
+    return UserModel.scan(filter_condition=(UserModel.username == email) &
+                                           (UserModel.status == StatusType.ACTIVE.value))
 
 
 def get_user(user_id: str):
@@ -54,7 +57,7 @@ def get_user(user_id: str):
 
 
 def remove_user(instance: UserModel):
-    instance.is_active = False
+    instance.status = StatusType.INACTIVE.value
     instance.save()
 
 
@@ -63,7 +66,7 @@ def update_user_balance(instance: UserModel, balance: float):
     instance.save()
 
 
-def create_operator(type_operation: str, cost: str):
+def create_operator(type_operation: str, cost: float):
     """
     Creqte new operation
     :param type_operation:
@@ -90,46 +93,25 @@ def get_operation(operation_id):
 
 def create_record(user_id: str,
                   operation_id: str,
-                  operator_one: str,
-                  operator_two: str,
+                  amount: float,
+                  user_balance: float,
                   operation_response: float):
     """
     Create record
     :param user_id:
     :param operation_id:
-    :param operator_one:
-    :param operator_two:
+    :param amount:
+    :param user_balance:
     :param operation_response:
     :return:
     """
 
-    record = RecordModel()
-    record.user_id = user_id,
-    record.operation_id = operation_id
-    record.operation_response = str(operation_response)
-    record.operator_one = operator_one
-    record.operator_two = operator_two
+    record = RecordModel(user_id=user_id,
+                         operation_id=operation_id,
+                         amount=amount,
+                         user_balance=user_balance,
+                         operation_response=operation_response)
     record.save()
-
-
-def filter_record(user_id: str, operation_id: str, operation_response: str,
-                  operation_one: str, operation_two: str, limit: int = 10,
-                  last_evaluated_key = None):
-    filter_condition = (RecordModel.user_id == user_id) & (RecordModel.is_active is True)
-    if operation_id:
-        filter_condition = filter_condition & (RecordModel.operation_id == operation_id)
-
-    if operation_response:
-        filter_condition = filter_condition & (RecordModel.operation_response.contains(operation_response))
-
-    if operation_one:
-        filter_condition = filter_condition & (RecordModel.operator_one.contains(operation_response))
-
-    if operation_two:
-        filter_condition = filter_condition & (RecordModel.operator_two.contains(operation_two))
-
-    return RecordModel.scan(filter_condition=filter_condition, limit=limit,
-                            last_evaluated_key=last_evaluated_key)
 
 
 def get_record(record_id: str):
@@ -138,7 +120,3 @@ def get_record(record_id: str):
     except DoesNotExist:
         return None
 
-
-def remove_record(instance: RecordModel):
-    instance.is_active = False
-    instance.save()
