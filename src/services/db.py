@@ -14,7 +14,7 @@ def create_user(username: str, password: str, user_balance: float):
     :param user_balance:
     :return:
     """
-    user = UserModel(user_id=str(uuid.uuid4().hex),
+    user = UserModel(user_id=str(uuid.uuid4()),
                      username=username,
                      password=password,
                      user_balance=user_balance)
