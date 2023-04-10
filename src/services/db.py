@@ -1,4 +1,5 @@
 import uuid
+from typing import List
 
 from src.data.enum import StatusType
 from src.data.model.operation import OperationModel
@@ -29,9 +30,14 @@ def search_user(username: str, password: str):
     :param password:
     :return:
     """
-    return UserModel.scan(filter_condition=(UserModel.username == username) &
-                                           (UserModel.password == password) &
-                                           (UserModel.status == StatusType.ACTIVE.value))
+    try:
+        _users = list(UserModel.scan(filter_condition=(UserModel.username == username) &
+                                                      (UserModel.password == password) &
+                                                      (UserModel.status == StatusType.ACTIVE.value)))
+    except UserModel.DoesNotExist:
+        _users = []
+    _users = [_key.to_dict() for _key in _users]
+    return _users
 
 
 def get_user_by_email(email: str):
@@ -40,8 +46,14 @@ def get_user_by_email(email: str):
     :param email:
     :return:
     """
-    return UserModel.scan(filter_condition=(UserModel.username == email) &
-                                           (UserModel.status == StatusType.ACTIVE.value))
+    try:
+        _users = list(UserModel.scan(filter_condition=(UserModel.username == email) &
+                                       (UserModel.status == StatusType.ACTIVE.value)))
+    except UserModel.DoesNotExist:
+        _users = []
+    _users = [_key.to_dict() for _key in _users]
+    return _users
+
 
 
 def get_user(user_id: str):
@@ -52,7 +64,7 @@ def get_user(user_id: str):
     """
     try:
         return UserModel.get(hash_key=user_id)
-    except DoesNotExist:
+    except UserModel.DoesNotExist:
         return None
 
 

@@ -20,3 +20,15 @@ class UserModel(Model):
     user_balance = NumberAttribute(null=False, default=0.0)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     status = UnicodeAttribute(null=False, default="active")
+
+    def to_dict(self):
+        """
+        Retrieves the model as a dictionary
+        :return:
+        """
+        _dict_data = {
+            "username": self.username,
+            "user_balance": self.user_balance,
+            "status": self.status
+        }
+        return _dict_data

@@ -17,7 +17,7 @@ class UserController:
         self.event = _event
 
     def create_user(self):
-        self.logger.info({"message": "Event information", "event_info": event})
+        self.logger.info({"message": "Event information", "event_info": self.event})
 
         body = json.loads(self.event.get("body", {}))
 
@@ -26,7 +26,7 @@ class UserController:
         email = body.get("username", "")
 
         users = get_user_by_email(email)
-        if users.total_count > 0:
+        if users:
             raise BadRequestException("There is an account with that username")
 
         password = encrypt_password(body.get("password", ""))
