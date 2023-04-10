@@ -1,6 +1,7 @@
 import json
 import os
 
+import bcrypt
 import jwt
 
 from src.data import schema
@@ -36,3 +37,8 @@ def decode_token(token: str):
     :return:
     """
     return jwt.decode(token, conf_service.SECRET_JWT, algorithm="HS256")
+
+
+def encrypt_password(password: str):
+    password = password.encode('utf-8')
+    return bcrypt.hashpw(password, bcrypt.gensalt())

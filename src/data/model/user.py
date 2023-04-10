@@ -8,14 +8,6 @@ from src.services.config import ConfigService
 conf = ConfigService()
 
 
-class UsernamePasswordIndex(GlobalSecondaryIndex):
-    class Meta:
-        projection = AllProjection()
-
-    username = UnicodeAttribute(hash_key=True)
-    password = UnicodeAttribute(range_key=True)
-
-
 class UserModel(Model):
     """
     A model with an index
@@ -31,4 +23,3 @@ class UserModel(Model):
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     is_active = BooleanAttribute(default=True)
 
-    username_password_index = UsernamePasswordIndex()
