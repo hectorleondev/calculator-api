@@ -1,0 +1,17 @@
+{
+   "$schema":"http://json-schema.org/draft-04/schema#",
+   "title":"create_calculation_division",
+   "type":"object",
+   "properties":{
+      "user_id":{"type":"string"},
+      "operation_id":{"type":"string"},
+      "dividend":{"type":"number"},
+      "divisor":{"type":"number", "minimum":  0.1}
+   },
+   "required":[
+      "user_id",
+      "operation_id",
+      "dividend",
+      "divisor"
+   ]
+}

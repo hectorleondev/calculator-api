@@ -2,3 +2,4 @@ pynamodb==5.4.1
 jsonschema==4.17.3
 aws-lambda-powertools==2.12.0
 pyjwt==2.6.0
+requests==2.28.2

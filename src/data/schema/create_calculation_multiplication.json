@@ -1,0 +1,17 @@
+{
+   "$schema":"http://json-schema.org/draft-04/schema#",
+   "title":"create_calculation_multiplication",
+   "type":"object",
+   "properties":{
+      "user_id":{"type":"string"},
+      "operation_id":{"type":"string"},
+      "multiplicand":{"type":"number"},
+      "multiplier":{"type":"number"}
+   },
+   "required":[
+      "user_id",
+      "operation_id",
+      "multiplicand",
+      "multiplier"
+   ]
+}

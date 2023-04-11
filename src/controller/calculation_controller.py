@@ -1,13 +1,16 @@
 import json
+from http import HTTPStatus
+
 import math
 from typing import Any
 
 from src.data.enum import OperationType
-from src.data.exceptions import BadRequestException
+from src.data.exceptions import BadRequestException, NotFoundException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
 from src.services.db import get_user, get_operation, create_record, update_user_balance
+from src.services.util import get_random_string
 from src.services.validation import validate_event
 
 
@@ -22,8 +25,6 @@ class CalculationController:
 
         body = json.loads(self.event.get("body", {}))
 
-        validate_event(body, "create_calculation")
-
         user_id = body.get("user_id", "")
 
         user = get_user(user_id)
@@ -36,41 +37,33 @@ class CalculationController:
         if not operation:
             raise BadRequestException("There is not an operation with operation_id")
 
+        validate_event(body, f"create_calculation_{operation.type}")
+
         new_balance = user.user_balance - operation.cost
         if new_balance <= 0:
             raise BadRequestException("User’s balance isn’t enough to cover the request cost")
 
         operation_response = None
-        amount_one = body.get("amount_one", "")
-        amount_two = body.get("amount_two", "")
-
         if operation.type == OperationType.ADDITION:
-            if not amount_one or not amount_two:
-                raise BadRequestException("amount_one and amount_two are required")
-            operation_response = str(float(amount_one) + float(amount_two))
+            operation_response = str(float(body.get("addend_one")) + float(body.get("addend_two")))
 
         if operation.type == OperationType.SUBTRACTION:
-            if not amount_one or not amount_two:
-                raise BadRequestException("amount_one and amount_two are required")
-            operation_response = str(float(amount_one) - float(amount_two))
+            operation_response = str(float(body.get("minuend")) - float(body.get("subtrahend")))
 
         if operation.type == OperationType.MULTIPLICATION:
-            if not amount_one or not amount_two:
-                raise BadRequestException("amount_one and amount_two are required")
-            operation_response = str(float(amount_one) * float(amount_two))
+            operation_response = str(float(body.get("multiplicand")) * float(body.get("multiplier")))
 
         if operation.type == OperationType.DIVISION:
-            if not amount_one or not amount_two:
-                raise BadRequestException("amount_one and amount_two are required")
-            amount_two = float(amount_two)
-            if amount_two == 0:
-                raise BadRequestException("The amount two must be different from zero")
-            operation_response = str(float(amount_one) / amount_two)
+            operation_response = str(float(body.get("dividend")) / float(body.get("divisor")))
 
         if operation.type == OperationType.SQUARE:
-            if not amount_one:
-                raise BadRequestException("amount_one is required")
-            operation_response = str(math.sqrt(float(amount_one)))
+            operation_response = str(math.sqrt(float(body.get("radicand"))))
+
+        if operation.type == OperationType.RANDOM:
+            response = get_random_string(body.get("length_string"))
+            if response.status_code != HTTPStatus.OK:
+                raise NotFoundException("Resource not found")
+            operation_response = response.text
 
         if not operation_response:
             raise BadRequestException("The operation does not logic")

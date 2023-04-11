@@ -93,6 +93,13 @@ functions:
           path: operation/list
           method: get
           cors: true
+  create_calculation:
+    handler: src.handlers.calculation_handler.create_calculation_handler
+    events:
+      - http:
+          path: calculation
+          method: post
+          cors: true
 resources:
   Resources:
     UserTable:
