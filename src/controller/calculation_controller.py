@@ -106,9 +106,12 @@ class CalculationController:
 
         if page is not None:
             page = int(page)
-            total_pages = total_records // page_length
-            if total_pages % page_length > 0:
-                total_pages += 1
+            if total_records < page_length:
+                total_pages = 1
+            else:
+                total_pages = total_records // page_length
+                if (total_records % page_length) > 0:
+                    total_pages += 1
 
             if page > total_pages:
                 raise BadRequestException("Invalid page")
