@@ -6,7 +6,6 @@
       "user_balance":{"type":"number"}
    },
    "required":[
-      "user_id",
       "user_balance"
    ]
 }

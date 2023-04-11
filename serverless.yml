@@ -50,9 +50,24 @@ functions:
     handler: src.handlers.update_user.handler
     events:
       - http:
-          path: user
+          path: user/{user_id}
           method: put
           cors: true
+          request:
+            parameters:
+              paths:
+                user_id: true
+  delete_user:
+    handler: src.handlers.delete_user.handler
+    events:
+      - http:
+          path: user/{user_id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                user_id: true
 resources:
   Resources:
     UserTable:

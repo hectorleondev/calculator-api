@@ -5,7 +5,7 @@ from src.data.exceptions import BadRequestException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance
+from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance, remove_user
 from src.services.util import encrypt_password
 from src.services.validation import validate_event
 
@@ -59,7 +59,7 @@ class UserController:
 
         validate_event(body, "update_user")
 
-        user_id = self.event.get("path", {}).get("user_id", "")
+        user_id = self.event.get("pathParameters", {}).get("user_id", "")
 
         user = get_user(user_id)
         if not user:
@@ -77,7 +77,7 @@ class UserController:
     def delete_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
 
-        user_id = self.event.get("path", {}).get("user_id", "")
+        user_id = self.event.get("pathParameters", {}).get("user_id", "")
 
         user = get_user(user_id)
         if not user:
