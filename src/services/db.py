@@ -1,7 +1,8 @@
 import uuid
 from typing import List
 
-from src.data.enum import StatusType
+from src.data.data_type import FilterData
+from src.data.enum import StatusType, RecordField, FilterType
 from src.data.model.operation import OperationModel
 from src.data.model.record import RecordModel
 from src.data.model.user import UserModel
@@ -161,4 +162,68 @@ def get_record(record_id: str):
         return RecordModel.get(hash_key=record_id)
     except DoesNotExist:
         return None
+
+
+def get_all_operation(items: list, filter_condition: any, limit: int = 100, last_evaluated_key=None)\
+        -> list:
+
+    response = RecordModel.scan(filter_condition=filter_condition,
+                                last_evaluated_key=last_evaluated_key,
+                                limit=limit)
+
+    for item in response:
+        items.append(item)
+
+    if response.last_evaluated_key:
+        items = get_all_operation(items=items,
+                                  filter_condition=filter_condition,
+                                  last_evaluated_key=response.last_evaluated_key)
+    return items
+
+
+def get_records_using_filter(filters: List[FilterData], user_id: str) -> list:
+    """
+
+    :param filters:
+    :param user_id:
+    :return:
+    """
+    filter_condition = RecordModel.user_id == user_id
+    for item in filters:
+        if item.field == RecordField.OPERATION_ID.value:
+            filter_condition &= RecordModel.operation_id == item.value
+
+        if item.field == RecordField.OPERATION_RESPONSE.value:
+            if item.operation == FilterType.EQ.value:
+                filter_condition &= RecordModel.operation_response == str(item.value)
+            if item.operation == FilterType.STARTWITH.value:
+                filter_condition &= RecordModel.operation_response.startswith(str(item.value))
+
+        if item.field == RecordField.AMOUNT.value:
+            if item.operation == FilterType.EQ.value:
+                filter_condition &= RecordModel.amount == float(item.value)
+            if item.operation == FilterType.LE.value:
+                filter_condition &= RecordModel.amount <= float(item.value)
+            if item.operation == FilterType.LT.value:
+                filter_condition &= RecordModel.amount < float(item.value)
+            if item.operation == FilterType.GE.value:
+                filter_condition &= RecordModel.amount >= float(item.value)
+            if item.operation == FilterType.GT.value:
+                filter_condition &= RecordModel.amount > float(item.value)
+
+        if item.field == RecordField.USER_BALANCE.value:
+            if item.operation == FilterType.EQ.value:
+                filter_condition &= RecordModel.user_balance == float(item.value)
+            if item.operation == FilterType.LE.value:
+                filter_condition &= RecordModel.user_balance <= float(item.value)
+            if item.operation == FilterType.LT.value:
+                filter_condition &= RecordModel.user_balance < float(item.value)
+            if item.operation == FilterType.GE.value:
+                filter_condition &= RecordModel.user_balance >= float(item.value)
+            if item.operation == FilterType.GT.value:
+                filter_condition &= RecordModel.user_balance > float(item.value)
+
+    return get_all_operation(items=[], filter_condition=filter_condition)
+
+
 

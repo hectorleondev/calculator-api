@@ -9,8 +9,8 @@ from src.data.exceptions import BadRequestException, NotFoundException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user, get_operation, create_record, update_user_balance
-from src.services.util import get_random_string
+from src.services.db import get_user, get_operation, create_record, update_user_balance, get_records_using_filter
+from src.services.util import get_random_string, parse_filters
 from src.services.validation import validate_event
 
 
@@ -82,3 +82,39 @@ class CalculationController:
             "user_balance": new_balance,
             "operation_cost": operation.cost
         }
+
+    def retrieve_calculation(self):
+        self.logger.info({"message": "Event information", "event_info": self.event})
+
+        user_id = self.event.get("pathParameters", {}).get("user_id", "")
+
+        filter_param = self.event.get("queryStringParameters", {}).get("filter", "")
+
+        filters = parse_filters(filter_param)
+
+        records = get_records_using_filter(filters=filters, user_id=user_id)
+        total_records = len(records)
+
+        page = self.event.get("queryStringParameters", {}).get("page", None)
+        page_length = int(self.event.get("queryStringParameters", {}).get("page", "10"))
+        total_pages = None
+
+        if page is not None:
+            page = int(page)
+            total_pages = total_records // page_length
+            if total_pages % page_length > 0:
+                total_pages += 1
+
+            if page > total_pages:
+                raise BadRequestException("Invalid page")
+
+            start_index = (int(page) - 1) * page_length
+            records = records[start_index: (start_index + page_length)]
+
+        return {
+            "records": records,
+            "total_records": total_records,
+            "page": page,
+            "total_pages": total_pages
+        }
+

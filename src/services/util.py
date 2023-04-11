@@ -1,11 +1,15 @@
 import base64
 import json
 import os
+from typing import List
 
 import jwt
 import requests
 
 from src.data import schema
+from src.data.data_type import FilterData
+from src.data.enum import RecordField, FilterType
+from src.data.exceptions import BadRequestException
 from src.services.config import ConfigService
 
 conf_service = ConfigService()
@@ -54,3 +58,23 @@ def get_random_string(length_string: str) -> requests.Response:
         response = requests.models.Response()
         response.status_code = 404
     return response
+
+
+def parse_filters(filter_param: str) -> List[FilterData]:
+    filter_list: List[FilterData] = []
+
+    items = filter_param.split(',')
+    for item in items:
+        params = item.split("+", 3)
+        if len(params) < 3:
+            raise BadRequestException("Invalid filters")
+
+        if params[0] not in RecordField.LIST.value or params[1] not in FilterType.LIST.value:
+            raise BadRequestException("Invalid filters")
+
+        filter_list.append(FilterData.from_dict({
+            "field": params[0],
+            "operation": params[1],
+            "value": params[2]
+        }))
+    return filter_list
