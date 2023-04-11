@@ -6,7 +6,7 @@ from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
 from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance, remove_user, \
-    get_operation, create_operator, get_all_operations, update_operator
+    get_operation, create_operator, get_all_operations, update_operator, get_operation_by_type
 from src.services.util import encrypt_password
 from src.services.validation import validate_event
 
@@ -24,19 +24,18 @@ class OperationController:
 
         validate_event(body, "create_operation")
 
-        operation_id = body.get("operation_id", "")
-
-        operation = get_operation(operation_id)
-        if operation:
-            raise BadRequestException("There is an operation with that id")
-
         type_operation = body.get("type", "")
+
+        operation = get_operation_by_type(type_operation)
+        if operation:
+            raise BadRequestException("There is an operation with that type")
+
         cost = float(body.get("cost", "0"))
 
         if cost <= 0:
             raise BadRequestException("The cost must be greater than zero")
 
-        create_operator(operation_id, type_operation, cost)
+        create_operator(type_operation, cost)
 
         return {"message": "Operation was created successfully"}
 
@@ -60,13 +59,12 @@ class OperationController:
         if not operation:
             raise BadRequestException("There is not an operation with operation_id")
 
-        type_operation = body.get("type", "")
         cost = float(body.get("cost", "0"))
 
         if cost <= 0:
             raise BadRequestException("The cost must be greater than zero")
 
-        update_operator(operation, type_operation, cost)
+        update_operator(operation, cost)
 
         return {"message": "Operation was updated successfully"}
 

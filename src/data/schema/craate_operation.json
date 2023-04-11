@@ -3,12 +3,10 @@
    "title":"create_operation",
    "type":"object",
    "properties":{
-      "operation_id":{"type":"string"},
       "type":{"type":"string"},
       "cost":{"type":"number"}
    },
    "required":[
-      "operation_id",
       "type",
       "cost"
    ]

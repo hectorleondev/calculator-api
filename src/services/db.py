@@ -77,22 +77,21 @@ def update_user_balance(instance: UserModel, balance: float):
     instance.save()
 
 
-def create_operator(operation_id: str, type_operation: str, cost: float):
+def create_operator(type_operation: str, cost: float):
     """
     Creqte new operation
-    :param operation_id:
     :param type_operation:
     :param cost:
     :return:
     """
     operation = OperationModel()
-    operation.operation_id = operation_id
+    operation.operation_id = str(uuid.uuid4())
     operation.type = type_operation
     operation.cost = cost
     operation.save()
 
 
-def update_operator(instance: OperationModel, type_operation: str, cost: float):
+def update_operator(instance: OperationModel, cost: float):
     """
     Update operation
     :param instance:
@@ -100,7 +99,6 @@ def update_operator(instance: OperationModel, type_operation: str, cost: float):
     :param cost:
     :return:
     """
-    instance.type = type_operation
     instance.cost = cost
     instance.save()
 
@@ -119,6 +117,20 @@ def get_operation(operation_id):
         return OperationModel.get(hash_key=operation_id)
     except OperationModel.DoesNotExist:
         return None
+
+
+def get_operation_by_type(type_operation: str):
+    """
+    Get user
+    :param type_operation:
+    :return:
+    """
+    try:
+        _operations = list(OperationModel.scan(filter_condition=(OperationModel.type == type_operation)))
+    except OperationModel.DoesNotExist:
+        _operations = []
+    _operations = [_key.to_dict() for _key in _operations]
+    return _operations
 
 
 def create_record(user_id: str,
