@@ -62,6 +62,8 @@ def get_random_string(length_string: str) -> requests.Response:
 
 def parse_filters(filter_param: str) -> List[FilterData]:
     filter_list: List[FilterData] = []
+    if not filter_param:
+        return filter_list
 
     items = filter_param.split(',')
     for item in items:

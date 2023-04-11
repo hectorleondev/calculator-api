@@ -89,7 +89,7 @@ class CalculationController:
 
         user_id = self.event.get("pathParameters", {}).get("user_id", "")
 
-        filter_param = self.event.get("queryStringParameters", {}).get("filter", "")
+        filter_param = self.event.get("queryStringParameters", {}).get("filters", "")
 
         filters = parse_filters(filter_param)
 
@@ -101,7 +101,7 @@ class CalculationController:
         total_records = len(records)
 
         page = self.event.get("queryStringParameters", {}).get("page", None)
-        page_length = int(self.event.get("queryStringParameters", {}).get("page", "10"))
+        page_length = int(self.event.get("queryStringParameters", {}).get("page_length", "10"))
         total_pages = None
 
         if page is not None:
