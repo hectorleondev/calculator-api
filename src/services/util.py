@@ -78,3 +78,10 @@ def parse_filters(filter_param: str) -> List[FilterData]:
             "value": params[2]
         }))
     return filter_list
+
+
+def get_operation_dict(operations: list) -> dict:
+    items = {}
+    for operation in operations:
+        items[operation["operation_id"]] = operation["type"]
+    return items

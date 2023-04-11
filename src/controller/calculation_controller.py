@@ -9,8 +9,9 @@ from src.data.exceptions import BadRequestException, NotFoundException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user, get_operation, create_record, update_user_balance, get_records_using_filter
-from src.services.util import get_random_string, parse_filters
+from src.services.db import get_user, get_operation, create_record, update_user_balance, get_records_using_filter, \
+    get_all_operations
+from src.services.util import get_random_string, parse_filters, get_operation_dict
 from src.services.validation import validate_event
 
 
@@ -92,7 +93,11 @@ class CalculationController:
 
         filters = parse_filters(filter_param)
 
-        records = get_records_using_filter(filters=filters, user_id=user_id)
+        operations = get_all_operations()
+        operation_list = get_operation_dict(operations)
+
+        records = get_records_using_filter(filters=filters, user_id=user_id,
+                                           operation_list=operation_list)
         total_records = len(records)
 
         page = self.event.get("queryStringParameters", {}).get("page", None)

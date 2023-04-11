@@ -16,3 +16,11 @@ def create_calculation_handler(event, _):
     user = CalculationController(_conf_svc=conf, _event=event, _logger=logger)
     response = user.create_calculation()
     return HTTPStatus.CREATED, response
+
+
+@ResponseService.pretty_response
+def get_calculation_handler(event, _):
+
+    user = CalculationController(_conf_svc=conf, _event=event, _logger=logger)
+    response = user.retrieve_calculation()
+    return HTTPStatus.OK, response

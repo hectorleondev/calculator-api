@@ -26,7 +26,7 @@ class OperationModel(Model):
         """
         _dict_data = {
             "operation_id": self.operation_id,
-            "username": self.type,
+            "type": self.type,
             "user_balance": self.cost,
         }
         return _dict_data

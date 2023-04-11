@@ -100,6 +100,18 @@ functions:
           path: calculation
           method: post
           cors: true
+  get_calculation:
+    handler: src.handlers.calculation_handler.get_calculation_handler
+    events:
+      - http:
+          path: calculation/{user_id}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                user_id: true
+
 resources:
   Resources:
     UserTable:

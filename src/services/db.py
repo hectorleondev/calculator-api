@@ -164,7 +164,7 @@ def get_record(record_id: str):
         return None
 
 
-def get_all_operation(items: list, filter_condition: any, limit: int = 100, last_evaluated_key=None)\
+def get_all_operation(items: list, filter_condition: any, operation_list: dict, limit: int = 100, last_evaluated_key=None)\
         -> list:
 
     response = RecordModel.scan(filter_condition=filter_condition,
@@ -172,20 +172,24 @@ def get_all_operation(items: list, filter_condition: any, limit: int = 100, last
                                 limit=limit)
 
     for item in response:
-        items.append(item)
+        new_item = item.to_dict()
+        new_item["operation_type"] = operation_list[item.operation_id]
+        items.append(new_item)
 
     if response.last_evaluated_key:
         items = get_all_operation(items=items,
+                                  operation_list=operation_list,
                                   filter_condition=filter_condition,
                                   last_evaluated_key=response.last_evaluated_key)
     return items
 
 
-def get_records_using_filter(filters: List[FilterData], user_id: str) -> list:
+def get_records_using_filter(filters: List[FilterData], user_id: str, operation_list: dict) -> list:
     """
 
     :param filters:
     :param user_id:
+    :param operation_list:
     :return:
     """
     filter_condition = RecordModel.user_id == user_id
@@ -223,7 +227,4 @@ def get_records_using_filter(filters: List[FilterData], user_id: str) -> list:
             if item.operation == FilterType.GT.value:
                 filter_condition &= RecordModel.user_balance > float(item.value)
 
-    return get_all_operation(items=[], filter_condition=filter_condition)
-
-
-
+    return get_all_operation(items=[], filter_condition=filter_condition, operation_list=operation_list)
