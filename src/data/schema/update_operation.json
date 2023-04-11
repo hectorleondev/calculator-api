@@ -3,7 +3,7 @@
    "title":"update_operation",
    "type":"object",
    "properties":{
-      "cost":{"type":"number"}
+      "cost":{"type":"number", "minimum": 0.1}
    },
    "required":[
       "cost"

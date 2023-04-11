@@ -11,7 +11,7 @@
          "square_root",
          "random_string"
       ]},
-      "cost":{"type":"number"}
+      "cost":{"type":"number", "minimum":  0.1}
    },
    "required":[
       "type",

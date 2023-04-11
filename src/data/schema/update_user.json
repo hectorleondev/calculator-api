@@ -3,7 +3,7 @@
    "title":"update_user",
    "type":"object",
    "properties":{
-      "user_balance":{"type":"number"}
+      "user_balance":{"type":"number", "minimum":  10}
    },
    "required":[
       "user_balance"
