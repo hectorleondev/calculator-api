@@ -43,6 +43,7 @@ class RecordModel(Model):
         :return:
         """
         _dict_data = {
+            "record_id":self.record_id,
             "user_id": self.user_id,
             "operation_id": self.operation_id,
             "amount": self.amount,

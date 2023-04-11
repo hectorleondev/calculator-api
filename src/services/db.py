@@ -147,7 +147,8 @@ def create_record(user_id: str,
     :return:
     """
 
-    record = RecordModel(user_id=user_id,
+    record = RecordModel(record_id=str(uuid.uuid4()),
+                         user_id=user_id,
                          operation_id=operation_id,
                          amount=amount,
                          user_balance=user_balance,
