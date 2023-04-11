@@ -26,11 +26,13 @@ def update_user_handler(event, _):
     return HTTPStatus.OK, response
 
 
+@ResponseService.pretty_response
 def login_user_handler(event, _):
 
     user = UserController(_conf_svc=conf, _event=event, _logger=logger)
     response = user.login_user()
     return HTTPStatus.OK, response
+
 
 @ResponseService.pretty_response
 def delete_user_handler(event, _):

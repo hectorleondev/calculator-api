@@ -33,21 +33,21 @@ provider:
 
 functions:
   create_user:
-    handler: src.handlers.create_user.handler
+    handler: src.handlers.user_handler.create_user_handler
     events:
       - http:
           path: user
           method: post
           cors: true
   login_user:
-    handler: src.handlers.login_user.handler
+    handler: src.handlers.user_handler.login_user_handler
     events:
       - http:
           path: login
           method: post
           cors: true
   update_user:
-    handler: src.handlers.update_user.handler
+    handler: src.handlers.user_handler.update_user_handler
     events:
       - http:
           path: user/{user_id}
@@ -58,7 +58,7 @@ functions:
               paths:
                 user_id: true
   delete_user:
-    handler: src.handlers.delete_user.handler
+    handler: src.handlers.user_handler.delete_user_handler
     events:
       - http:
           path: user/{user_id}
