@@ -68,6 +68,31 @@ functions:
             parameters:
               paths:
                 user_id: true
+  create_operation:
+    handler: src.handlers.operation_handler.create_operation_handler
+    events:
+      - http:
+          path: operation
+          method: post
+          cors: true
+  update_operation:
+    handler: src.handlers.operation_handler.update_operation_handler
+    events:
+      - http:
+          path: operation/{operation_id}
+          method: put
+          cors: true
+          request:
+            parameters:
+              paths:
+                operation_id: true
+  get_operation_list:
+    handler: src.handlers.operation_handler.get_operation_list_handler
+    events:
+      - http:
+          path: operation/list
+          method: get
+          cors: true
 resources:
   Resources:
     UserTable:

@@ -50,7 +50,7 @@ class UserController:
         if not users:
             raise BadRequestException("Account not found")
 
-        return users[0]
+        return {"user": users[0]}
 
     def update_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
