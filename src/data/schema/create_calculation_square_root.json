@@ -5,7 +5,7 @@
    "properties":{
       "user_id":{"type":"string"},
       "operation_id":{"type":"string"},
-      "radicand":{"type":"number"}
+      "radicand":{"type":"number", "minimum":  0}
    },
    "required":[
       "user_id",

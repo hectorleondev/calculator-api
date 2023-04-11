@@ -76,7 +76,9 @@ class CalculationController:
 
         update_user_balance(user, new_balance)
 
-        return {"message": "Calculation was created successfully"}
-
-
-
+        return {
+            "operation_type": operation.type,
+            "operation_response": operation_response,
+            "user_balance": new_balance,
+            "operation_cost": operation.cost
+        }
