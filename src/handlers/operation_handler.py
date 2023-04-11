@@ -32,6 +32,3 @@ def get_operation_list_handler(event, _):
     user = OperationController(_conf_svc=conf, _event=event, _logger=logger)
     response = user.get_operation_list()
     return HTTPStatus.OK, response
-
-
-
