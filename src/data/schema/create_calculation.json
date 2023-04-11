@@ -1,0 +1,15 @@
+{
+   "$schema":"http://json-schema.org/draft-04/schema#",
+   "title":"create_calculation",
+   "type":"object",
+   "properties":{
+      "user_id":{"type":"string"},
+      "operation_id":{"type":"string"},
+      "amount_one":{"type":"number", "minimum":  0},
+      "amount_two":{"type":"number", "minimum":  0}
+   },
+   "required":[
+      "user_id",
+      "operation_id"
+   ]
+}

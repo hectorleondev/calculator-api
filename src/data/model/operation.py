@@ -25,7 +25,7 @@ class OperationModel(Model):
         :return:
         """
         _dict_data = {
-            "user_id": self.operation_id,
+            "operation_id": self.operation_id,
             "username": self.type,
             "user_balance": self.cost,
         }

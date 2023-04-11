@@ -32,7 +32,21 @@ class RecordModel(Model):
     operation_id = UnicodeAttribute(null=False)
     amount = NumberAttribute(null=False, default=0.0)
     user_balance = NumberAttribute(null=False, default=0.0)
-    operation_response = NumberAttribute(null=False, default=0.0)
+    operation_response = UnicodeAttribute(null=False)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
 
     user_index = UserIndex()
+
+    def to_dict(self):
+        """
+        Retrieves the model as a dictionary
+        :return:
+        """
+        _dict_data = {
+            "user_id": self.user_id,
+            "operation_id": self.operation_id,
+            "amount": self.amount,
+            "user_balance": self.user_balance,
+            "operation_response": self.operation_response
+        }
+        return _dict_data

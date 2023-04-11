@@ -136,7 +136,7 @@ def create_record(user_id: str,
                   operation_id: str,
                   amount: float,
                   user_balance: float,
-                  operation_response: float):
+                  operation_response: str):
     """
     Create record
     :param user_id:
