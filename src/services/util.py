@@ -65,9 +65,9 @@ def parse_filters(filter_param: str) -> List[FilterData]:
     if not filter_param:
         return filter_list
 
-    items = filter_param.split(',')
+    items = filter_param.split('&')
     for item in items:
-        params = item.split("+", 3)
+        params = item.split(",", 3)
         if len(params) < 3:
             raise BadRequestException("Invalid filters")
 
