@@ -44,22 +44,22 @@ class CalculationController:
             raise BadRequestException("User’s balance isn’t enough to cover the request cost")
 
         operation_response = None
-        if operation.type == OperationType.ADDITION:
+        if operation.type == OperationType.ADDITION.value:
             operation_response = str(float(body.get("addend_one")) + float(body.get("addend_two")))
 
-        if operation.type == OperationType.SUBTRACTION:
+        if operation.type == OperationType.SUBTRACTION.value:
             operation_response = str(float(body.get("minuend")) - float(body.get("subtrahend")))
 
-        if operation.type == OperationType.MULTIPLICATION:
+        if operation.type == OperationType.MULTIPLICATION.value:
             operation_response = str(float(body.get("multiplicand")) * float(body.get("multiplier")))
 
-        if operation.type == OperationType.DIVISION:
+        if operation.type == OperationType.DIVISION.value:
             operation_response = str(float(body.get("dividend")) / float(body.get("divisor")))
 
-        if operation.type == OperationType.SQUARE:
+        if operation.type == OperationType.SQUARE.value:
             operation_response = str(math.sqrt(float(body.get("radicand"))))
 
-        if operation.type == OperationType.RANDOM:
+        if operation.type == OperationType.RANDOM.value:
             response = get_random_string(body.get("length_string"))
             if response.status_code != HTTPStatus.OK:
                 raise NotFoundException("Resource not found")
