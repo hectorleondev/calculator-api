@@ -41,32 +41,36 @@ class CalculationController:
             raise BadRequestException("User’s balance isn’t enough to cover the request cost")
 
         operation_response = None
+        amount_one = body.get("amount_one", "")
+        amount_two = body.get("amount_two", "")
+
         if operation.type == OperationType.ADDITION:
-            amount_one = float(body.get("amount_one", "0"))
-            amount_two = float(body.get("amount_one", "0"))
-            operation_response = str(amount_one + amount_two)
+            if not amount_one or not amount_two:
+                raise BadRequestException("amount_one and amount_two are required")
+            operation_response = str(float(amount_one) + float(amount_two))
 
         if operation.type == OperationType.SUBTRACTION:
-            amount_one = float(body.get("amount_one", "0"))
-            amount_two = float(body.get("amount_one", "0"))
-            operation_response = str(amount_one - amount_two)
+            if not amount_one or not amount_two:
+                raise BadRequestException("amount_one and amount_two are required")
+            operation_response = str(float(amount_one) - float(amount_two))
 
         if operation.type == OperationType.MULTIPLICATION:
-            amount_one = float(body.get("amount_one", "0"))
-            amount_two = float(body.get("amount_one", "0"))
-            operation_response = str(amount_one * amount_two)
+            if not amount_one or not amount_two:
+                raise BadRequestException("amount_one and amount_two are required")
+            operation_response = str(float(amount_one) * float(amount_two))
 
         if operation.type == OperationType.DIVISION:
-            amount_one = float(body.get("amount_one", "0"))
-            amount_two = float(body.get("amount_one", "0"))
+            if not amount_one or not amount_two:
+                raise BadRequestException("amount_one and amount_two are required")
+            amount_two = float(amount_two)
             if amount_two == 0:
-                raise BadRequestException("The amount must be different from zero")
-
-            operation_response = str(amount_one * amount_two)
+                raise BadRequestException("The amount two must be different from zero")
+            operation_response = str(float(amount_one) / amount_two)
 
         if operation.type == OperationType.SQUARE:
-            amount_one = float(body.get("amount_one", "0"))
-            operation_response = str(math.sqrt(amount_one))
+            if not amount_one:
+                raise BadRequestException("amount_one is required")
+            operation_response = str(math.sqrt(float(amount_one)))
 
         if not operation_response:
             raise BadRequestException("The operation does not logic")
