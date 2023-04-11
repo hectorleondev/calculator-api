@@ -40,7 +40,7 @@ class CalculationController:
         validate_event(body, f"create_calculation_{operation.type}")
 
         new_balance = user.user_balance - operation.cost
-        if new_balance <= 0:
+        if new_balance < 0:
             raise BadRequestException("User’s balance isn’t enough to cover the request cost")
 
         operation_response = None
