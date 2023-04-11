@@ -59,7 +59,7 @@ class UserController:
 
         validate_event(body, "update_user")
 
-        user_id = body.get("user_id", "")
+        user_id = self.event.get("path", {}).get("user_id", "")
 
         user = get_user(user_id)
         if not user:
@@ -73,4 +73,17 @@ class UserController:
         update_user_balance(user, user_balance)
 
         return {"message": "User was updated successfully"}
+
+    def delete_user(self):
+        self.logger.info({"message": "Event information", "event_info": self.event})
+
+        user_id = self.event.get("path", {}).get("user_id", "")
+
+        user = get_user(user_id)
+        if not user:
+            raise BadRequestException("There is not an account with user_id")
+
+        remove_user(user)
+
+        return {"message": "User was removed successfully"}
 

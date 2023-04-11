@@ -18,3 +18,15 @@ class OperationModel(Model):
     type = UnicodeAttribute()
     cost = NumberAttribute(null=False, default=0.0)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
+
+    def to_dict(self):
+        """
+        Retrieves the model as a dictionary
+        :return:
+        """
+        _dict_data = {
+            "user_id": self.operation_id,
+            "username": self.type,
+            "user_balance": self.cost,
+        }
+        return _dict_data

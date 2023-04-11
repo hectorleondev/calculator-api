@@ -3,7 +3,6 @@
    "title":"update_user",
    "type":"object",
    "properties":{
-      "user_id":{"type":"string"},
       "user_balance":{"type":"number"}
    },
    "required":[
