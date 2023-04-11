@@ -95,7 +95,6 @@ def update_operator(instance: OperationModel, cost: float):
     """
     Update operation
     :param instance:
-    :param type_operation:
     :param cost:
     :return:
     """
