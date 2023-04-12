@@ -235,7 +235,7 @@ def get_records_using_filter(filters: List[FilterData], user_id: str, operation_
     if filter_user_balance is not None and filter_operation_response is not None:
         filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_response)
 
-    if filter_operation_amount is not None and filter_operation_id:
+    if filter_operation_amount is not None and filter_operation_id is not None:
         filter_condition = (RecordModel.user_id == user_id) & (filter_operation_amount) & (filter_operation_id)
 
     if filter_operation_amount is not None and filter_operation_response is not None:
