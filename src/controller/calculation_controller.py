@@ -89,7 +89,12 @@ class CalculationController:
 
         user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
-        filter_param = self.event.get("queryStringParameters", {}).get("filters", "")
+        query_string = self.event.get("queryStringParameters", {})
+        filter_param = ""
+        page = None
+        if query_string is not None:
+            filter_param = self.event.get("queryStringParameters", {}).get("filters", "")
+            page = self.event.get("queryStringParameters", {}).get("page", None)
 
         filters = parse_filters(filter_param)
 
@@ -100,7 +105,6 @@ class CalculationController:
                                            operation_list=operation_list)
         total_records = len(records)
 
-        page = self.event.get("queryStringParameters", {}).get("page", None)
         total_pages = None
         page_length = None
         if page is not None:
