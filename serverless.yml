@@ -59,13 +59,9 @@ functions:
     handler: src.handlers.user_handler.update_user_handler
     events:
       - http:
-          path: user/{user_id}
+          path: user
           method: put
           cors: true
-          request:
-            parameters:
-              paths:
-                user_id: true
           authorizer:
             name: PrivateAuthorizer
             type: COGNITO_USER_POOLS
@@ -76,13 +72,9 @@ functions:
     handler: src.handlers.user_handler.delete_user_handler
     events:
       - http:
-          path: user/{user_id}
+          path: user
           method: delete
           cors: true
-          request:
-            parameters:
-              paths:
-                user_id: true
           authorizer:
             name: PrivateAuthorizer
             type: COGNITO_USER_POOLS
@@ -96,6 +88,12 @@ functions:
           path: operation
           method: post
           cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   update_operation:
     handler: src.handlers.operation_handler.update_operation_handler
     events:
@@ -107,6 +105,12 @@ functions:
             parameters:
               paths:
                 operation_id: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   get_operation_list:
     handler: src.handlers.operation_handler.get_operation_list_handler
     events:
@@ -137,13 +141,9 @@ functions:
     handler: src.handlers.calculation_handler.get_calculation_handler
     events:
       - http:
-          path: calculation/{user_id}
+          path: calculation
           method: get
           cors: true
-          request:
-            parameters:
-              paths:
-                user_id: true
           authorizer:
             name: PrivateAuthorizer
             type: COGNITO_USER_POOLS
