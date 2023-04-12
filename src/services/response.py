@@ -3,7 +3,7 @@ import json
 import jsonschema
 from aws_lambda_powertools import Logger
 
-from src.data.exceptions import BadRequestException
+from src.data.exceptions import BadRequestException, InvalidCredentials, UserNotFound, UserNotConfirmed
 from src.services.config import ConfigService
 
 conf_service = ConfigService()
@@ -37,6 +37,18 @@ class ResponseService:
             except BadRequestException as ex:
                 logger.info({"message": "BadRequest ERROR", "exception": str(ex)})
                 status_code = 400
+                response = {'message': str(ex)}
+            except InvalidCredentials as ex:
+                logger.info({"message": "Unauthorized ERROR", "exception": str(ex)})
+                status_code = 400
+                response = {'message': str(ex)}
+            except UserNotFound as ex:
+                logger.info({"message": "Not Found ERROR", "exception": str(ex)})
+                status_code = 404
+                response = {'message': str(ex)}
+            except UserNotConfirmed as ex:
+                logger.info({"message": "Not Confirm ERROR", "exception": str(ex)})
+                status_code = 409
                 response = {'message': str(ex)}
             except Exception as ex:
                 logger.info({"message": "Exception ERROR", "exception": str(ex)})

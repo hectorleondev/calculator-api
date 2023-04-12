@@ -8,6 +8,7 @@ provider:
   name: aws
   runtime: python3.9
   region: us-east-1
+  stage: dev
   environment:
     USER_TABLE:
       Ref: UserTable
@@ -17,6 +18,10 @@ provider:
       Ref: RecordTable
     LOGGER_SERVICE_NAME: ${self:service}-logger
     REGION: ${self:provider.region}
+    USER_POOL_ID:
+      Ref: AuthUsersPool
+    USER_POOL_CLIENT_ID:
+      Ref: CognitoUserPoolClient
   iam:
     role:
       statements:
@@ -29,6 +34,10 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
             - dynamodb:DescribeTable
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - cognito-idp:*
           Resource: "*"
 
 functions:
@@ -57,6 +66,12 @@ functions:
             parameters:
               paths:
                 user_id: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   delete_user:
     handler: src.handlers.user_handler.delete_user_handler
     events:
@@ -68,6 +83,12 @@ functions:
             parameters:
               paths:
                 user_id: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   create_operation:
     handler: src.handlers.operation_handler.create_operation_handler
     events:
@@ -93,6 +114,12 @@ functions:
           path: operation/list
           method: get
           cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: ["AuthUsersPool", "Arn"]
+            claims: ["email"]
   create_calculation:
     handler: src.handlers.calculation_handler.create_calculation_handler
     events:
@@ -100,6 +127,12 @@ functions:
           path: calculation
           method: post
           cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   get_calculation:
     handler: src.handlers.calculation_handler.get_calculation_handler
     events:
@@ -111,9 +144,55 @@ functions:
             parameters:
               paths:
                 user_id: true
-
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: ["AuthUsersPool", "Arn"]
+            claims: ["email"]
 resources:
   Resources:
+    AuthUsersPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:provider.stage}-user-pool
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: true
+        AutoVerifiedAttributes: ["email"]
+        MfaConfiguration: "OFF"
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        CallbackURLs:
+          - Fn::Sub: "https://fif5el1wvl.execute-api.us-east-1.amazonaws.com/dev/callback"
+        ClientName: ${self:provider.stage}-user-pool-client
+        GenerateSecret: false
+        UserPoolId: {Ref: AuthUsersPool}
+        AccessTokenValidity: 24
+        IdTokenValidity: 24
+        ExplicitAuthFlows:
+          - ALLOW_ADMIN_USER_PASSWORD_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        AllowedOAuthFlows:
+          - implicit
+          - code
+        AllowedOAuthScopes:
+          - openid
+          - email
+          - profile
+        AllowedOAuthFlowsUserPoolClient: true
+
     UserTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
