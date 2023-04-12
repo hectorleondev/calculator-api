@@ -92,9 +92,14 @@ class CalculationController:
         query_string = self.event.get("queryStringParameters", {})
         filter_param = ""
         page = None
+        page_length = None
         if query_string is not None:
             filter_param = query_string.get("filters", "")
             page = query_string.get("page", None)
+            page_length = query_string.get("page_length", None)
+
+        if page_length is not None and page is None:
+            raise BadRequestException("If you want to set page_length, you need to set page too")
 
         filters = parse_filters(filter_param)
 
