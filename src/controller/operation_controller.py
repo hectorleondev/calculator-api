@@ -5,9 +5,7 @@ from src.data.exceptions import BadRequestException
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance, remove_user, \
-    get_operation, create_operator, get_all_operations, update_operator, get_operation_by_type
-from src.services.util import encrypt_password
+from src.services.db import get_operation, create_operator, get_all_operations, update_operator, get_operation_by_type
 from src.services.validation import validate_event
 
 
