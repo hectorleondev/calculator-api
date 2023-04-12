@@ -12,7 +12,7 @@ from aws_lambda_powertools import Logger
 from src.services.db import get_user, get_operation, create_record, update_user_balance, get_records_using_filter, \
     get_all_operations
 from src.services.util import get_random_string, parse_filters, get_operation_dict
-from src.services.validation import validate_event
+from src.services.validation import validate_event, valid_number
 
 
 class CalculationController:
@@ -97,6 +97,12 @@ class CalculationController:
             filter_param = query_string.get("filters", "")
             page = query_string.get("page", None)
             page_length = query_string.get("page_length", None)
+
+        if not valid_number(page):
+            raise BadRequestException("Invalid Page")
+
+        if not valid_number(page_length):
+            raise BadRequestException("Invalid page_length")
 
         if page_length is not None and page is None:
             raise BadRequestException("If you want to set page_length, you need to set page too")
