@@ -152,6 +152,7 @@ functions:
             claims: [ "email" ]
   get_calculation:
     handler: src.handlers.calculation_handler.get_calculation_handler
+    timeout: 30
     events:
       - http:
           path: calculation
