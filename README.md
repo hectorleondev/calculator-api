@@ -1,101 +1,345 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in Python'
-description: 'This template demonstrates how to make a simple HTTP API with Python running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: python
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Calculator Api
 
-# Serverless Framework Python HTTP API on AWS
+This template includes samples how to install the application and documentation about the endpoints.
 
-This template demonstrates how to make a simple HTTP API with Python running on AWS Lambda and API Gateway using the Serverless Framework.
+First of all I am using  Python and Serverless Framework to build the application.
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/)  which includes DynamoDB, Mongo, Fauna and other examples.
-
-## Usage
-
-### Deployment
-
+## Environment Information
+Domain: https://o01xgqczze.execute-api.us-east-1.amazonaws.com
+Credentials
 ```
+{
+    "username":"payorayo@gmail.com",
+    "password":"Password123$"
+}
+```
+
+## Install
+
+Setup your amazon credential in your credentials file [official documentation](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/)
+
+```bash
+Run the following command in root path
+$ npm install
 $ serverless deploy
+
+Deploying calculator-api to stage dev (us-east-1)
+
+✔ Service deployed to stack calculator-api-dev (170s)
+
 ```
 
-After deploying, you should see output similar to:
+## Accounts
+I am using AWS Cognito like service to store the password, generate tokens. First you need to create an account after 
+generate new auth token. With that auth token, you can consume remaining endpoints.
+
+### Create Account
 
 ```bash
-Deploying aws-python-http-api-project to stage dev (us-east-1)
-
-✔ Service deployed to stack aws-python-http-api-project-dev (140s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: aws-python-http-api-project-dev-hello (2.3 kB)
-```
-
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).
-
-### Invocation
-
-After successful deployment, you can call the created application via HTTP:
-
-```bash
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
-
-Which should result in response similar to the following (removed `input` content for brevity):
-
-```json
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/user' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username":"<EMAIL>",
+    "password":"<PASSWORD>",
+    "user_balance": <USER_BALANCE>
+}
+'
+response 
 {
-  "message": "Go Serverless v3.0! Your function executed successfully!",
-  "input": {
-    ...
-  }
+    "message": "There is an account with that username"
+}
+'
+```
+
+_Note_: User Balance numeric or decimal positive value and all fields are required
+
+
+### Get Auth Token
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username":"<EMAIL>",
+    "password":"<PASSWORD>"
+}
+'
+response
+{
+    "token": "<TOKEN>"
 }
 ```
+_Note_: All fields are required
 
-### Local development
+### Edit Account
 
-You can invoke your function locally by using the following command:
+You just can update `user_balance`.
 
 ```bash
-serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
+curl --location --request PUT 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/user' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJraWQiOiJNTkJrOGRzUWxqeldVelR2NWlsWVJIWVwvK3R4bkk2NHVwbUxzbkRla2Zzaz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI1ZThmZWU2My02NDNhLTRhMWEtYmY2MC05OGZiZjA1NDA2YjIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX3dHbklFd0VBeiIsImNvZ25pdG86dXNlcm5hbWUiOiI1ZThmZWU2My02NDNhLTRhMWEtYmY2MC05OGZiZjA1NDA2YjIiLCJvcmlnaW5fanRpIjoiM2JjNzE4OWYtNzRlOC00NWFiLTllZTktMDQ1NGU3MzM4ZTdhIiwiYXVkIjoiNG9jbjhnMzRmMWJzZGZqdG92dGU0MXJuaDEiLCJldmVudF9pZCI6IjhjZmNiMTMyLWVmZTQtNDhjNy04ZDkxLTQxMjM3Njk3YmZlMiIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjgxMzE4NzQ2LCJleHAiOjE2ODE0MDUxNDYsImlhdCI6MTY4MTMxODc0NiwianRpIjoiODBlN2U5NGItMTA1Mi00OWFiLWFiNmYtNzVkNDZjNThhNGIwIiwiZW1haWwiOiJwYXlvcmF5b0BnbWFpbC5jb20ifQ.bOAnkp8zbjBLSQ9oMxkCW5wxwnzpHhpNBx9DEqg__w6fpUO0-yhdG3wnaZeZdMfbahbvMRZJIOq3ZjzMDNJn_IXuBiQ-C_6vWwODTvibTLAPn92Xy7jXlSxp_umV8vl2FoO1L2jt4NyQUNIcZeuHRmYDTeCqYx19bx94XmmQNffNFWpAqdz7pjIzfBI88mlHomq9MJsqWLlcKO9n-7Bue-jgp8e-i8LDU8y9hPZNyxqAMOombm-U9ZMLlL3k098Om_M1QQMyXaA_nC3YZyd07JZqHKO6qbTz7nRxxa65AtBbim8DvhUzxgrlA92t6OPq82mPiwt5pMjVxzNS9Axkmw' \
+--data '{
+    "user_balance": <USER_BALANCE>
+}
+'
+Response
 {
-  "statusCode": 200,
-  "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
+    "message": "User was updated successfully"
 }
 ```
+_Note_: All fields are required
 
-Alternatively, it is also possible to emulate API Gateway and Lambda locally by using `serverless-offline` plugin. In order to do that, execute the following command:
-
+### Account Info
+The endpoint gets user information.
 ```bash
-serverless plugin install -n serverless-offline
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/user' \
+--header 'Authorization: Bearer <TOKEN>'
+
+Response
+{
+    "user_info": {
+        "user_id": "zzzzzzzzz",
+        "username": "<EMAIL>",
+        "user_balance": <USER BALANCE>
+    }
+}
+'
 ```
+_Note_: User id is generated by AWS Cognito directly and all fields are required
 
-It will add the `serverless-offline` plugin to `devDependencies` in `package.json` file as well as will add it to `plugins` in `serverless.yml`.
-
-After installation, you can start local emulation with:
-
-```
-serverless offline
-```
-
-To learn more about the capabilities of `serverless-offline`, please refer to its [GitHub repository](https://github.com/dherault/serverless-offline).
-
-### Bundling dependencies
-
-In case you would like to include 3rd party dependencies, you will need to use a plugin called `serverless-python-requirements`. You can set it up by running the following command:
-
+### Remove Account
 ```bash
-serverless plugin install -n serverless-python-requirements
+curl --location --request DELETE 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/user' \
+--header 'Authorization: Bearer <TOKEN>'
+
+Response
+{
+    "message": "User was removed successfully"
+}
+```
+_Note_: The deleted account keeps in dynamodb just changed the status to `inactive` instead of `active`. 
+But in the case of Cognito the account is removed because Cognito Pool is connected to Email. 
+We can not two accounts with same email in Cognito
+
+
+## Operation
+The application just support the following types:
+* addition
+* subtraction
+* multiplication
+* division
+* square_root
+* random_string
+
+The application does not allow two operations with tha same type and each operation own identifier `operation_id`
+
+### Create Operation
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/operation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "type":"square_root",
+    "cost": 500
+}
+'
+Response
+{
+    "message": "Operation was created successfully"
+}
+'
+```
+_Note_: Cost is a numeric or decimal positive value and all fields are required
+
+### List Operation
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/operation/list' \
+--header 'Authorization: Bearer <TOKEN>'
+'
+Response
+{
+    "operations": [
+        {
+            "operation_id": "11111",
+            "type": "multiplication",
+            "user_balance": 300
+        },
+        {
+            "operation_id": "222222",
+            "type": "random_string",
+            "user_balance": 600
+        },
+        {
+            "operation_id": "333333",
+            "type": "addition",
+            "user_balance": 100
+        },
+        {
+            "operation_id": "444444",
+            "type": "subtraction",
+            "user_balance": 200
+        },
+        {
+            "operation_id": "55555",
+            "type": "square_root",
+            "user_balance": 500
+        },
+        {
+            "operation_id": "66666",
+            "type": "division",
+            "user_balance": 400
+        }
+    ]
+}
+'
 ```
 
-Running the above will automatically add `serverless-python-requirements` to `plugins` section in your `serverless.yml` file and add it as a `devDependency` to `package.json` file. The `package.json` file will be automatically created if it doesn't exist beforehand. Now you will be able to add your dependencies to `requirements.txt` file (`Pipfile` and `pyproject.toml` is also supported but requires additional configuration) and they will be automatically injected to Lambda package during build process. For more details about the plugin's configuration, please refer to [official documentation](https://github.com/UnitedIncome/serverless-python-requirements).
+### Edit Operation
+```bash
+curl --location --request PUT 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/operation/<OPERATION_ID>' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "cost": 600
+}
+'
+'
+Response
+{
+    "message": "Operation was updated successfully"
+}
+'
+```
+_Note_: Cost is a numeric or decimal positive value
+
+## Calculation
+
+### Create Calculation
+There is specific request per each operation.
+
+Division
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "dividend": 9,
+    "divisor": 3
+}'
+'
+Response
+{
+    "operation_type": "division",
+    "operation_response": "3.0",
+    "user_balance": 3600,
+    "operation_cost": 400
+}
+'
+```
+
+Addition
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "addend_one": 9,
+    "addend_one": 3
+}'
+'
+Response
+{
+    "operation_type": "addition",
+    "operation_response": "12.0",
+    "user_balance": 3600,
+    "operation_cost": 100
+}
+'
+```
+
+Subtraction
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "minuend": 9,
+    "subtrahend": 3
+}'
+
+Response
+{
+    "operation_type": "subtraction",
+    "operation_response": "6.0",
+    "user_balance": 3600,
+    "operation_cost": 100
+}
+'
+```
+
+Multiplication
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "multiplicand": 9,
+    "multiplier": 3
+}'
+
+Response
+{
+    "operation_type": "multiplication",
+    "operation_response": "27.0",
+    "user_balance": 3600,
+    "operation_cost": 100
+}
+'
+```
+
+Random String
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "length_string": 5
+}'
+
+Response
+{
+    "operation_type": "random_string",
+    "operation_response": "csew2",
+    "user_balance": 3600,
+    "operation_cost": 100
+}
+'
+```
+
+square_root
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <TOKEN>' \
+--data '{
+    "operation_id": "<OPERATION_ID>",
+    "radicand": 25
+}'
+
+Response
+{
+    "operation_type": "square_root",
+    "operation_response": "5,0",
+    "user_balance": 3600,
+    "operation_cost": 100
+}
+'
+```
+
+
+### Filter Records
