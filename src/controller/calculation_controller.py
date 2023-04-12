@@ -26,7 +26,7 @@ class CalculationController:
 
         body = json.loads(self.event.get("body", {}))
 
-        user_id = body.get("user_id", "")
+        user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
         user = get_user(user_id)
         if not user:
@@ -87,7 +87,7 @@ class CalculationController:
     def retrieve_calculation(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
 
-        user_id = self.event.get("pathParameters", {}).get("user_id", "")
+        user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
         filter_param = self.event.get("queryStringParameters", {}).get("filters", "")
 

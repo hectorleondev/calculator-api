@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from src.data.exceptions import BadRequestException
-from src.services.cognito import sign_up, admin_confirm_sign_up, authenticate_user
+from src.services.cognito import sign_up, admin_confirm_sign_up, authenticate_user, admin_delete_user
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
@@ -96,7 +96,7 @@ class UserController:
 
         validate_event(body, "update_user")
 
-        user_id = self.event.get("pathParameters", {}).get("user_id", "")
+        user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
         user = get_user(user_id)
         if not user:
@@ -114,13 +114,17 @@ class UserController:
     def delete_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
 
-        user_id = self.event.get("pathParameters", {}).get("user_id", "")
+        user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
         user = get_user(user_id)
         if not user:
             raise BadRequestException("There is not an account with user_id")
 
         remove_user(user)
+
+        admin_delete_user(cognito_cli=self.conf_svc.cognito_cli,
+                          user_pool_id=self.conf_svc.USER_POOL_ID,
+                          email=user.username)
 
         return {"message": "User was removed successfully"}
 

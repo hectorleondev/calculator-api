@@ -48,20 +48,6 @@ def admin_confirm_sign_up(cognito_cli, user_pool_id, username):
         return None
 
 
-def admin_get_user(cognito_cli, user_pool_id, email):
-    """
-
-    :param cognito_cli:
-    :param user_pool_id:
-    :param email:
-    :return:
-    """
-    return cognito_cli.admin_get_user(
-        UserPoolId=user_pool_id,
-        Username=email,
-    )
-
-
 def admin_delete_user(cognito_cli, user_pool_id, email):
     """
 

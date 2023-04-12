@@ -3,12 +3,10 @@
    "title":"create_calculation_square_root",
    "type":"object",
    "properties":{
-      "user_id":{"type":"string"},
       "operation_id":{"type":"string"},
       "radicand":{"type":"number", "minimum":  0}
    },
    "required":[
-      "user_id",
       "operation_id",
       "radicand"
    ]
