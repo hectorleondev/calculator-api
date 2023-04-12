@@ -2,11 +2,11 @@ import json
 from typing import Any
 
 from src.data.exceptions import BadRequestException
+from src.services.cognito import sign_up, admin_confirm_sign_up, authenticate_user
 from src.services.config import ConfigService
 from aws_lambda_powertools import Logger
 
-from src.services.db import get_user_by_email, create_user, search_user, get_user, update_user_balance, remove_user
-from src.services.util import encrypt_password
+from src.services.db import get_user_by_email, create_user, get_user, update_user_balance, remove_user
 from src.services.validation import validate_event
 
 
@@ -29,12 +29,31 @@ class UserController:
         if users:
             raise BadRequestException("There is an account with that username")
 
-        password = encrypt_password(body.get("password", ""))
+        password = body.get("password", "")
+        user_id = sign_up(
+            cognito_cli=self.conf_svc.cognito_cli,
+            cognito_client_id=self.conf_svc.CLIENT_ID,
+            password=password,
+            email=email
+        )
+
+        admin_confirm_sign_up(
+            cognito_cli=self.conf_svc.cognito_cli,
+            user_pool_id=self.conf_svc.USER_POOL_ID,
+            username=email
+        )
+
         user_balance = float(body.get("user_balance", "0"))
 
-        create_user(email, password, user_balance)
+        create_user(user_id, email, user_balance)
 
-        return {"message": "User was created successfully"}
+        user_info = {
+            "user_id": user_id,
+            "username": email,
+            "user_balance": user_balance
+        }
+
+        return {"user_info": user_info}
 
     def login_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
@@ -44,13 +63,31 @@ class UserController:
         validate_event(body, "login")
 
         email = body.get("username", "")
-        password = encrypt_password(body.get("password", ""))
+        password = body.get("password", "")
 
-        users = search_user(email, password)
-        if not users:
-            raise BadRequestException("Account not found")
+        _authenticated_data = authenticate_user(
+            cognito_cli=self.conf_svc.cognito_cli,
+            cognito_client_id=self.conf_svc.CLIENT_ID,
+            email=email,
+            password=password,
+        )
+        return {"token": _authenticated_data.get("id_token")}
 
-        return {"user": users[0]}
+    def get_user_info(self):
+        self.logger.info({"message": "Event information", "event_info": self.event})
+
+        body = json.loads(self.event.get("body", {}))
+
+        # validate_event(body, "login")
+        #
+        # email = body.get("username", "")
+        # password = encrypt_password(body.get("password", ""))
+        #
+        # users = search_user(email, password)
+        # if not users:
+        #     raise BadRequestException("Account not found")
+
+        # return {"user": users[0]}
 
     def update_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})

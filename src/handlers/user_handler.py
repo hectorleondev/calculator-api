@@ -40,5 +40,3 @@ def delete_user_handler(event, _):
     user = UserController(_conf_svc=conf, _event=event, _logger=logger)
     response = user.delete_user()
     return HTTPStatus.OK, response
-
-

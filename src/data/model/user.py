@@ -16,7 +16,6 @@ class UserModel(Model):
 
     user_id = UnicodeAttribute(hash_key=True)
     username = UnicodeAttribute(null=False)
-    password = UnicodeAttribute(null=False)
     user_balance = NumberAttribute(null=False, default=0.0)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     status = UnicodeAttribute(null=False, default="active")

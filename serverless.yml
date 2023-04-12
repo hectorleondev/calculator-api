@@ -156,9 +156,15 @@ resources:
       Type: AWS::Cognito::UserPool
       Properties:
         UserPoolName: ${self:provider.stage}-user-pool
+        AutoVerifiedAttributes: [ "email" ]
+        MfaConfiguration: "OFF"
+        UsernameAttributes: [ "email" ]
         Schema:
-          - Name: email
-            Required: true
+          - AttributeDataType: Boolean
+            Name: email_address
+            Mutable: true
+          - AttributeDataType: Boolean
+            Name: email_confirmed
             Mutable: true
         Policies:
           PasswordPolicy:
@@ -167,8 +173,6 @@ resources:
             RequireLowercase: true
             RequireNumbers: true
             RequireSymbols: true
-        AutoVerifiedAttributes: ["email"]
-        MfaConfiguration: "OFF"
 
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
