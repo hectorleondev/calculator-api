@@ -55,6 +55,19 @@ functions:
           path: login
           method: post
           cors: true
+  user_info:
+    handler: src.handlers.user_handler.get_user_info_handler
+    events:
+      - http:
+          path: user
+          method: get
+          cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt: [ "AuthUsersPool", "Arn" ]
+            claims: [ "email" ]
   update_user:
     handler: src.handlers.user_handler.update_user_handler
     events:

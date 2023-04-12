@@ -76,18 +76,19 @@ class UserController:
     def get_user_info(self):
         self.logger.info({"message": "Event information", "event_info": self.event})
 
-        body = json.loads(self.event.get("body", {}))
+        user_id = self.event.get("requestContext", {}).get("authorizer", {}).get("claims", {}).get("sub", "")
 
-        # validate_event(body, "login")
-        #
-        # email = body.get("username", "")
-        # password = encrypt_password(body.get("password", ""))
-        #
-        # users = search_user(email, password)
-        # if not users:
-        #     raise BadRequestException("Account not found")
+        user = get_user(user_id)
+        if not user:
+            raise BadRequestException("There is not an account with user_id")
 
-        # return {"user": users[0]}
+        user_info = {
+            "user_id": user.user_id,
+            "username": user.username,
+            "user_balance": user.user_balance
+        }
+
+        return {"user_info": user_info}
 
     def update_user(self):
         self.logger.info({"message": "Event information", "event_info": self.event})

@@ -40,3 +40,11 @@ def delete_user_handler(event, _):
     user = UserController(_conf_svc=conf, _event=event, _logger=logger)
     response = user.delete_user()
     return HTTPStatus.OK, response
+
+
+@ResponseService.pretty_response
+def get_user_info_handler(event, _):
+
+    user = UserController(_conf_svc=conf, _event=event, _logger=logger)
+    response = user.get_user_info()
+    return HTTPStatus.OK, response
