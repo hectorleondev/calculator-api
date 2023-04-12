@@ -343,3 +343,105 @@ Response
 
 
 ### Filter Records
+Get all records belong to a user, Optionally it is possible to paginate and filter
+
+#### Filter (optional)
+
+There are following operations
+* le (<=)
+* lt (<)
+* ge (>=)
+* gt (>)
+* eq (=)
+* startswith
+
+We can filter by following field but each field allow some operations:
+* operation_id
+  * eq
+* amount
+  * le
+  * lt
+  * ge
+  * gt
+  * eq
+* user_balance
+  * le
+  * lt
+  * ge
+  * gt
+  * eq
+* operation_response 
+  * eq
+  * startswith
+
+_Note_: operation_response just allows 2 operation because 
+can store random_string result.
+
+Finally, you need to follow format without spaces
+
+```bash
+<FIELD>,<OPERATION>,<Value>
+
+sample:
+
+amount,ge,100
+user_balance,gt,100
+operation_response,startswith,2
+operation_id,eq,111111
+```
+
+If you want to set multiple filters you need to use the characters "**"
+
+```bash
+<FIELD>,<OPERATION>,<Value>**<FIELD>,<OPERATION>,<Value>
+
+sample:
+
+amount,ge,100**user_balance,gt,100
+operation_response,startswith,2**operation_id,eq,111111
+```
+
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation?filters=amount%2Cge%2C100**user_balance%2Cgt%2C100**operation_response%2Cstartswith%2C2**operation_id%2Ceq%2C7c261bc1-9197-473a-9a3e-4f85f2b00383' \
+--header 'Authorization: Bearer <TOKEN>'
+
+response
+{
+    "records": [
+        {
+            "record_id": "3f90151f-5d01",
+            "user_id": "<USER_ID>",
+            "operation_id": "111111",
+            "amount": 100,
+            "user_balance": 200,
+            "operation_response": "115.0",
+            "operation_type": "addition"
+        },
+    ],
+    "total_records": 1,
+    "page": 1,
+    "page_length": 10,
+    "total_pages": 1
+}
+```
+
+#### Pagination (optional)
+
+page: It is the number the page and value must be numeric and greater than zero)
+
+page_length: It is the number of records per page and value must be numeric and greater than zero. 
+If you tried to set page_length without page value, the endpoint response 400
+
+```bash
+curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation?page=2&page_length=4' \
+--header 'Authorization: Bearer <TOKEN>'
+```
+
+## Unit test
+```bash
+Run the following command in root path
+$ pytest tests --cov=src/
+
+```
+
+
