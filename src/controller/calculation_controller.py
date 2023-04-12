@@ -93,8 +93,8 @@ class CalculationController:
         filter_param = ""
         page = None
         if query_string is not None:
-            filter_param = self.event.get("queryStringParameters", {}).get("filters", "")
-            page = self.event.get("queryStringParameters", {}).get("page", None)
+            filter_param = query_string.get("filters", "")
+            page = query_string.get("page", None)
 
         filters = parse_filters(filter_param)
 
@@ -108,7 +108,7 @@ class CalculationController:
         total_pages = None
         page_length = None
         if page is not None:
-            page_length = int(self.event.get("queryStringParameters", {}).get("page_length", "10"))
+            page_length = int(query_string.get("page_length", "10"))
             page = int(page)
             if total_records < page_length:
                 total_pages = 1
