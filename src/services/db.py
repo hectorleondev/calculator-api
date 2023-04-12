@@ -174,39 +174,87 @@ def get_records_using_filter(filters: List[FilterData], user_id: str, operation_
     :param operation_list:
     :return:
     """
-    filter_condition = RecordModel.user_id == user_id
+    filter_operation_id = None
+    filter_operation_response = None
+    filter_operation_amount = None
+    filter_user_balance = None
     for item in filters:
         if item.field == RecordField.OPERATION_ID.value:
-            filter_condition &= RecordModel.operation_id == item.value
+            filter_operation_id = RecordModel.operation_id == item.value
 
         if item.field == RecordField.OPERATION_RESPONSE.value:
             if item.operation == FilterType.EQ.value:
-                filter_condition &= RecordModel.operation_response == str(item.value)
+                filter_operation_response = RecordModel.operation_response == str(item.value)
             if item.operation == FilterType.STARTWITH.value:
-                filter_condition &= RecordModel.operation_response.startswith(str(item.value))
+                filter_operation_response = RecordModel.operation_response.startswith(str(item.value))
 
         if item.field == RecordField.AMOUNT.value:
             if item.operation == FilterType.EQ.value:
-                filter_condition &= RecordModel.amount == float(item.value)
+                filter_operation_amount = RecordModel.amount == float(item.value)
             if item.operation == FilterType.LE.value:
-                filter_condition &= RecordModel.amount <= float(item.value)
+                filter_operation_amount = RecordModel.amount <= float(item.value)
             if item.operation == FilterType.LT.value:
-                filter_condition &= RecordModel.amount < float(item.value)
+                filter_operation_amount = RecordModel.amount < float(item.value)
             if item.operation == FilterType.GE.value:
-                filter_condition &= RecordModel.amount >= float(item.value)
+                filter_operation_amount = RecordModel.amount >= float(item.value)
             if item.operation == FilterType.GT.value:
-                filter_condition &= RecordModel.amount > float(item.value)
+                filter_operation_amount = RecordModel.amount > float(item.value)
 
         if item.field == RecordField.USER_BALANCE.value:
             if item.operation == FilterType.EQ.value:
-                filter_condition &= RecordModel.user_balance == float(item.value)
+                filter_user_balance = RecordModel.user_balance == float(item.value)
             if item.operation == FilterType.LE.value:
-                filter_condition &= RecordModel.user_balance <= float(item.value)
+                filter_user_balance = RecordModel.user_balance <= float(item.value)
             if item.operation == FilterType.LT.value:
-                filter_condition &= RecordModel.user_balance < float(item.value)
+                filter_user_balance = RecordModel.user_balance < float(item.value)
             if item.operation == FilterType.GE.value:
-                filter_condition &= RecordModel.user_balance >= float(item.value)
+                filter_user_balance = RecordModel.user_balance >= float(item.value)
             if item.operation == FilterType.GT.value:
-                filter_condition &= RecordModel.user_balance > float(item.value)
+                filter_user_balance = RecordModel.user_balance > float(item.value)
+
+    filter_condition = (RecordModel.user_id == user_id)
+
+    if filter_user_balance is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance)
+
+    if filter_operation_amount is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_amount)
+
+    if filter_operation_id is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_id)
+
+    if filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_response)
+
+    if filter_user_balance is not None and filter_operation_amount is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_amount)
+
+    if filter_user_balance is not None and filter_operation_id is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_id)
+
+    if filter_user_balance is not None and filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_response)
+
+    if filter_operation_amount is not None and filter_operation_id:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_amount) & (filter_operation_id)
+
+    if filter_operation_amount is not None and filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_amount) & (filter_operation_response)
+
+    if filter_operation_id is not None and filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_operation_id) & (filter_operation_response)
+
+    if filter_user_balance is not None and filter_operation_amount is not None and filter_operation_id is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_amount) & (filter_operation_id)
+
+    if filter_user_balance is not None and filter_operation_amount is not None and filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_amount) & (filter_operation_response)
+
+    if filter_user_balance is not None and  filter_operation_id is not None and filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_id) & (filter_operation_response)
+
+    if filter_user_balance is not None and filter_operation_amount is not None and filter_operation_id is not None and \
+            filter_operation_response is not None:
+        filter_condition = (RecordModel.user_id == user_id) & (filter_user_balance) & (filter_operation_amount) & (filter_operation_id) & (filter_operation_response)
 
     return get_all_operation(items=[], filter_condition=filter_condition, operation_list=operation_list)
