@@ -101,10 +101,10 @@ class CalculationController:
         total_records = len(records)
 
         page = self.event.get("queryStringParameters", {}).get("page", None)
-        page_length = int(self.event.get("queryStringParameters", {}).get("page_length", "10"))
         total_pages = None
-
+        page_length = None
         if page is not None:
+            page_length = int(self.event.get("queryStringParameters", {}).get("page_length", "10"))
             page = int(page)
             if total_records < page_length:
                 total_pages = 1
@@ -123,6 +123,7 @@ class CalculationController:
             "records": records,
             "total_records": total_records,
             "page": page,
+            "page_length": page_length,
             "total_pages": total_pages
         }
 
