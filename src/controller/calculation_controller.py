@@ -91,21 +91,18 @@ class CalculationController:
 
         query_string = self.event.get("queryStringParameters", {})
         filter_param = ""
-        page = None
-        page_length = None
+        page = "1"
+        page_length = "10"
         if query_string is not None:
             filter_param = query_string.get("filters", "")
-            page = query_string.get("page", None)
-            page_length = query_string.get("page_length", None)
+            page = query_string.get("page", "1")
+            page_length = query_string.get("page_length", "10")
 
         if not valid_number(page):
             raise BadRequestException("Invalid Page")
 
         if not valid_number(page_length):
             raise BadRequestException("Invalid page_length")
-
-        if page_length is not None and page is None:
-            raise BadRequestException("If you want to set page_length, you need to set page too")
 
         filters = parse_filters(filter_param)
 
@@ -115,24 +112,21 @@ class CalculationController:
         records = get_records_using_filter(filters=filters, user_id=user_id,
                                            operation_list=operation_list)
         total_records = len(records)
+        page_length = int(page_length)
+        page = int(page)
 
-        total_pages = None
-        page_length = None
-        if page is not None:
-            page_length = int(query_string.get("page_length", "10"))
-            page = int(page)
-            if total_records < page_length:
-                total_pages = 1
-            else:
-                total_pages = total_records // page_length
-                if (total_records % page_length) > 0:
-                    total_pages += 1
+        if total_records < page_length:
+            total_pages = 1
+        else:
+            total_pages = total_records // page_length
+            if (total_records % page_length) > 0:
+                total_pages += 1
 
-            if page > total_pages:
-                raise BadRequestException("Invalid page")
+        if page > total_pages:
+            raise BadRequestException("Invalid page")
 
-            start_index = (int(page) - 1) * page_length
-            records = records[start_index: (start_index + page_length)]
+        start_index = (int(page) - 1) * page_length
+        records = records[start_index: (start_index + page_length)]
 
         return {
             "records": records,

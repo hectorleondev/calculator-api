@@ -425,12 +425,11 @@ response
 }
 ```
 
-#### Pagination (optional)
+#### Pagination 
 
-page: It is the number the page and value must be numeric and greater than zero)
+page: It is the number the page and value must be numeric and greater than zero). Default value is 1
 
-page_length: It is the number of records per page and value must be numeric and greater than zero. 
-If you tried to set page_length without page value, the endpoint response 400
+page_length: It is the number of records per page and value must be numeric and greater than zero. Default value is 10
 
 ```bash
 curl --location 'https://o01xgqczze.execute-api.us-east-1.amazonaws.com/dev/calculation?page=2&page_length=4' \
