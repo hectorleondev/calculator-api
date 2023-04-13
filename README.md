@@ -162,32 +162,32 @@ Response
         {
             "operation_id": "11111",
             "type": "multiplication",
-            "user_balance": 300
+            "cost": 300
         },
         {
             "operation_id": "222222",
             "type": "random_string",
-            "user_balance": 600
+            "cost": 600
         },
         {
             "operation_id": "333333",
             "type": "addition",
-            "user_balance": 100
+            "cost": 100
         },
         {
             "operation_id": "444444",
             "type": "subtraction",
-            "user_balance": 200
+            "cost": 200
         },
         {
             "operation_id": "55555",
             "type": "square_root",
-            "user_balance": 500
+            "cost": 500
         },
         {
             "operation_id": "66666",
             "type": "division",
-            "user_balance": 400
+            "cost": 400
         }
     ]
 }
