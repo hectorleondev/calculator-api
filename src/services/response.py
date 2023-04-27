@@ -23,8 +23,7 @@ class ResponseService:
 
             headers = {
                 "Access-Control-Allow-Origin": "*",
-                "Content-Type": "application/json",
-                'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+                "Content-Type": "application/json"
             }
             try:
                 status_code, response = func(*args, **kwargs)
